@@ -29,7 +29,7 @@ public class InsertStatements {
 		//populate tables
 		System.out.println("Commencing table population");
 		
-		populateManager();
+		//populateManager();
 		populateModerator();
 		populateSpecialAbilities();
 		populatePlayers();
@@ -83,11 +83,11 @@ public class InsertStatements {
 	{
 		Statement state = m_dbConn.createStatement();
 		String sql = "INSERT INTO MANAGER(Login, Password, Email) VALUES"
-				+ "('manager1','Password1','NotAManger1@ship.edu'),"
+				+ "('manager0','Password0','NotAManger0@ship.edu'),"
 				+ "('manager2', 'Password2', 'NotAManger2@ship.edu'),"
 				+ "('manager3', 'Password3', 'NotAManger3@ship.edu'),"
 				+ "('manager4', 'Password4', 'NotAManger4@ship.edu'),"
-				+ "('manager5', 'Password5', 'NotAManger5@ship.edu'));";
+				+ "('manager5', 'Password5', 'NotAManger5@ship.edu');";
 		state.execute(sql);
 	}
 	
