@@ -20,8 +20,8 @@ public class Part1 {
 	public void createDatabase() throws Exception{
 		activateJDBC();
 		createConnection();
-		createTableManager();
-		createTableManagerPrivileges();
+		//createTableManager();
+		//createTableManagerPrivileges();
 		createTableModerator();
 		createTableModeratorPrivileges();
 		createTablePlayer();
@@ -107,8 +107,8 @@ public class Part1 {
 		String createTable = "CREATE TABLE MANAGER_PRIVILEGES" +
 							"(ManLogin 		VARCHAR(16)	 Not Null, " +
 							"ManPrivilege 	VARCHAR(255) Not Null," +
-							"PRIMARY KEY(ManPrivilege, ManLogin)" +
-							"FOREIGN KEY(ManLogin) REFERENCES (MANAGER (LOGIN)));";
+							"PRIMARY KEY(ManPrivilege, ManLogin)," +
+							"FOREIGN KEY(ManLogin) REFERENCES MANAGER (Login));";
 		
 		statement.executeUpdate(createTable);
 		statement.close();
@@ -123,9 +123,9 @@ public class Part1 {
     	Statement statement = m_dbConn.createStatement();
 		
 		String createTable = "CREATE TABLE MODERATOR" +
-							"(Login 	VARCHAR(16)	Not Null, " +
-							"Password 	VARCHAR(64) Not Null," +
-							"E-mail		VARCHAR(64) Not Null," +
+							"(Login VARCHAR(16)	Not Null, " +
+							"Password VARCHAR(64) Not Null," +
+							"E-mail	VARCHAR(64) Not Null," +
 							"PRIMARY KEY(Login));";
 		
 		statement.executeUpdate(createTable);
