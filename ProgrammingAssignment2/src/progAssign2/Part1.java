@@ -4,7 +4,7 @@ import java.sql.*;
 
 /**
  *  Class used to create the database based
- *  off of work from Homework 3 Part 2
+ *  off of work from Homework 3 Part 2 
  *  
  * @author Jared Sawyers
  *
