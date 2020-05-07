@@ -10,7 +10,7 @@ import java.sql.Statement;
  * @author Gabe Werick
  * 
  * This class has insert statements to add data to tables programming assignment2
- *
+ *ad
  */
 public class InsertStatements {
 	
