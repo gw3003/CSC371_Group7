@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  * Creates display 4 for programming assignment 2
@@ -36,6 +37,7 @@ public class Display4 implements ActionListener {
 	
 	//character data
 	private JButton charButtons[] = null;
+	private String[] chars = {"Dio", "Jonathan", "Jotaro", "Joseph", "Speedwagon"};
 	private static final int MAX_NUM_OF_CHARS = 5;
 	private int currentChar = -1;
 	
@@ -43,8 +45,8 @@ public class Display4 implements ActionListener {
 	private String playerName = null;
 	
 	//item data
-	private JButton iButtons[] = null;
 	private static final int MAX_NUM_OF_ITEMS = 10;
+	private int editedItem = 0;
 	
 	//add and delete buttons
 	private JButton add = null;
@@ -63,6 +65,17 @@ public class Display4 implements ActionListener {
 	private JButton weapon = null;
 	private JButton armor = null;
 	private JButton container = null;
+	private JButton generateItem = null;
+	
+	//Text fields
+	private JTextField deleteField = null;
+	private JTextField weight = null;
+	private JTextField volume = null;
+	private JTextField id = null;
+	private JTextField fId1 = null;
+	private JTextField fId2 = null;
+	private JTextField val1 = null;
+	private JTextField val2 = null;
 
 	public Display4() throws SQLException
 	{
@@ -203,19 +216,20 @@ public class Display4 implements ActionListener {
 	{
 		
 		itemPane = new JPanel();
-		GridLayout grid = new GridLayout(MAX_NUM_OF_ITEMS, 1);
+		GridLayout grid = new GridLayout(MAX_NUM_OF_ITEMS+1, 1);
 		itemPane.setLayout(grid);
 		
 		//TODO Update with SQL code
 		//generate item pane
 		String[] items = {"Clacky Balls", "Lucky Sword", "Plucky Sword", "Bag of Holding"};
-		iButtons = new JButton[MAX_NUM_OF_ITEMS];
+		JLabel iLabel[] = new JLabel[MAX_NUM_OF_ITEMS];
+		
+		itemPane.add(new JLabel(chars[currentChar] + "'s items"));
 		
 		for(int i=0; i< items.length; i++)
 		{
-			iButtons[i] = new JButton(items[i]);
-			iButtons[i].addActionListener(this);
-			itemPane.add("West", iButtons[i]);
+			iLabel[i] = new JLabel(items[i]);
+			itemPane.add("West", iLabel[i]);
 		}
 		
 		pane.add("West",itemPane);
@@ -229,7 +243,6 @@ public class Display4 implements ActionListener {
 	private void generateCharList(JPanel pane)
 	{
 		//TODO Update with SQL code to query the db for characters
-		String[] chars = {"Dio", "Jonathan", "Jotaro", "Joseph", "Speedwagon"};
 		charButtons = new JButton[MAX_NUM_OF_CHARS];
 		//Loop through and add buttons to pane with the names of chars
 		for(int i = 0; i < chars.length; i++)
@@ -310,9 +323,114 @@ public class Display4 implements ActionListener {
 		GridLayout grid = new GridLayout(3,1);
 		buttonPane.setLayout(grid);
 		
+		buttonPane.add(new JLabel("Enter exact name of item to delete"));
+		buttonPane.add(new JLabel("If no match is found nothing will be deleted"));
+		
+		deleteField = new JTextField();
+		deleteField.addActionListener(this);
+		buttonPane.add(deleteField);
+		
+		mainItemDisplay.add("East", buttonPane);
+		
+		mainItemDisplay.revalidate();
+		mainItemDisplay.repaint();
+		mainFrame.revalidate();
+		mainFrame.repaint();
+		mainFrame.pack();
+		mainFrame.setVisible(true);
+		
 		
 	}
+	
+	/**
+	 * Resets add/delete buttons + calls sql delete statement
+	 */
+	private void executeDelete(String deleteTarget)
+	{
+		//TODO add delete sql statement
+		
+		//Reset button/item fields
+		mainItemDisplay.remove(buttonPane);
+		mainItemDisplay.remove(itemPane);
+		
+		generateItemLayout(mainItemDisplay);
+		generateButtonsToEast(mainItemDisplay);
+		
+		mainItemDisplay.revalidate();
+		mainItemDisplay.repaint();
+		mainFrame.revalidate();
+		mainFrame.repaint();
+		mainFrame.pack();
+		mainFrame.setVisible(true);
+	}
+	
+	/**
+	 * Shows display to add a generic item
+	 */
+	private void buildGenItem()
+	{
+		mainItemDisplay.remove(buttonPane);
+		buttonPane = new JPanel();
+		GridLayout grid = new GridLayout(8,1);
+		buttonPane.setLayout(grid);
+		
+		buttonPane.add(new JLabel("Enter stats for Generic Item"));
+		
+		buttonPane.add(new JLabel("Enter item name"));
+		id = new JTextField();
+		buttonPane.add(id);
+		
+		buttonPane.add(new JLabel("Enter weight"));
+		weight = new JTextField();
+		buttonPane.add(weight);
+		
+		buttonPane.add(new JLabel("Enter volume"));
+		volume = new JTextField();
+		buttonPane.add(volume);
+		
+		generateItem = new JButton("Create Item");
+		generateItem.addActionListener(this);
+		buttonPane.add(generateItem);
+		
+		mainItemDisplay.add(buttonPane);
+		mainItemDisplay.revalidate();
+		mainItemDisplay.repaint();
+		mainFrame.revalidate();
+		mainFrame.repaint();
+		mainFrame.pack();
+		mainFrame.setVisible(true);
+	}
 
+	private void buildArmorItem()
+	{
+		
+	}
+	
+	
+	
+	/**
+	 * Will attempt to add an item to database
+	 * then revert displays back to normal
+	 */
+	private void generateItem()
+	{
+		//TODO Add SQL
+		
+		//Reset button/item fields
+		mainItemDisplay.remove(buttonPane);
+		mainItemDisplay.remove(itemPane);
+				
+		generateItemLayout(mainItemDisplay);
+		generateButtonsToEast(mainItemDisplay);
+				
+		mainItemDisplay.revalidate();
+		mainItemDisplay.repaint();
+		mainFrame.revalidate();
+		mainFrame.repaint();
+		mainFrame.pack();
+		mainFrame.setVisible(true);
+	}
+	
 	/**
 	 * Contains the actions for the events
 	 * @param event
@@ -321,28 +439,28 @@ public class Display4 implements ActionListener {
 	public void actionPerformed(ActionEvent event) {
 		if(event.getSource() == charButtons[0])
 		{
-			updateFrameWithItems(0);
 			currentChar = 0;
+			updateFrameWithItems(0);
 		}
 		if(event.getSource() == charButtons[1])
 		{
-			updateFrameWithItems(1);
 			currentChar = 1;
+			updateFrameWithItems(1);
 		}
 		if(event.getSource() == charButtons[2])
 		{
-			updateFrameWithItems(2);
 			currentChar = 2;
+			updateFrameWithItems(2);
 		}
 		if(event.getSource() == charButtons[3])
 		{
-			updateFrameWithItems(3);
 			currentChar = 3;
+			updateFrameWithItems(3);
 		}
 		if(event.getSource() == charButtons[4])
 		{
-			updateFrameWithItems(4);
 			currentChar = 4;
+			updateFrameWithItems(4);
 		}
 		if(event.getSource() == add)
 		{
@@ -351,6 +469,32 @@ public class Display4 implements ActionListener {
 		if(event.getSource() == delete)
 		{
 			deleteItem();
+		}
+		if(event.getSource() == deleteField)
+		{
+			executeDelete(deleteField.getText());
+		}
+		if(event.getSource() == generic)
+		{
+			editedItem = 1;
+			buildGenItem();
+		}
+		if(event.getSource() == armor)
+		{
+			editedItem = 2;
+			buildArmorItem();
+		}
+		if(event.getSource() == weapon)
+		{
+			
+		}
+		if(event.getSource() == container)
+		{
+			
+		}
+		if(event.getSource() == generateItem)
+		{
+			generateItem();
 		}
 	}
 }
