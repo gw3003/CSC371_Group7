@@ -72,7 +72,7 @@ public class Display4 implements ActionListener {
 	
 	//Text fields
 	private JTextField deleteField = null;
-	private JTextField weight = null;
+	private JTextField mass = null;
 	private JTextField volume = null;
 	private JTextField id = null;
 	private JTextField fId1 = null;
@@ -385,8 +385,6 @@ public class Display4 implements ActionListener {
 		mainFrame.repaint();
 		mainFrame.pack();
 		mainFrame.setVisible(true);
-		
-		
 	}
 	
 	/**
@@ -474,9 +472,9 @@ public class Display4 implements ActionListener {
 		id = new JTextField();
 		buttonPane.add(id);
 		
-		buttonPane.add(new JLabel("Enter weight"));
-		weight = new JTextField();
-		buttonPane.add(weight);
+		buttonPane.add(new JLabel("Enter mass"));
+		mass = new JTextField();
+		buttonPane.add(mass);
 		
 		buttonPane.add(new JLabel("Enter volume"));
 		volume = new JTextField();
@@ -512,8 +510,8 @@ public class Display4 implements ActionListener {
 		buttonPane.add(id);
 		
 		buttonPane.add(new JLabel("Enter weight"));
-		weight = new JTextField();
-		buttonPane.add(weight);
+		mass = new JTextField();
+		buttonPane.add(mass);
 		
 		buttonPane.add(new JLabel("Enter volume"));
 		volume = new JTextField();
@@ -558,8 +556,8 @@ public class Display4 implements ActionListener {
 		buttonPane.add(id);
 		
 		buttonPane.add(new JLabel("Enter weight"));
-		weight = new JTextField();
-		buttonPane.add(weight);
+		mass = new JTextField();
+		buttonPane.add(mass);
 		
 		buttonPane.add(new JLabel("Enter volume"));
 		volume = new JTextField();
@@ -603,8 +601,8 @@ public class Display4 implements ActionListener {
 		buttonPane.add(id);
 		
 		buttonPane.add(new JLabel("Enter weight"));
-		weight = new JTextField();
-		buttonPane.add(weight);
+		mass = new JTextField();
+		buttonPane.add(mass);
 		
 		buttonPane.add(new JLabel("Enter volume"));
 		volume = new JTextField();
@@ -634,10 +632,52 @@ public class Display4 implements ActionListener {
 	/**
 	 * Will attempt to add an item to database
 	 * then revert displays back to normal
+	 * @throws SQLException 
 	 */
-	private void generateItem()
+	private void generateItem() throws SQLException
 	{
-		//TODO Add SQL
+		String isql = "CALL addItem(?,?,?)";
+		CallableStatement stmt = m_dbConn.prepareCall(isql);
+		stmt.setString(1, id.getText());
+		String sql = "";
+		
+		switch (editedItem) {
+		case 1:
+			//Add item
+			stmt.setString(2, null);
+			stmt.setString(3, chars[currentChar]);
+			stmt.execute();
+			//add generic item
+			sql = "CALL addGenItem(?,?,?)";
+			stmt = m_dbConn.prepareCall(sql);
+			stmt.setString(1, id.getText());
+			stmt.setInt(2, Integer.parseInt(volume.getText()));
+			stmt.setInt(3, Integer.parseInt(mass.getText()));
+			stmt.execute();
+			
+			break;
+		case 2:
+			//Add item
+			stmt.setString(2, chars[currentChar]);
+			stmt.setString(3, null);
+			stmt.execute();
+			
+			sql = "CALL addArmor(?,?,?,?,?)";
+			stmt = m_dbConn.prepareCall(sql);
+			stmt.setString(1, id.getText());
+			stmt.setInt(2, Integer.parseInt(volume.getText()));
+			stmt.setInt(3, Integer.parseInt(mass.getText()));
+			stmt.setString(4, val2.getText());
+			stmt.setInt(5, Integer.parseInt(val1.getText()));
+			stmt.execute();
+			break;
+		case 3:
+			//weapon
+			break;
+		case 4:
+			//container
+			break;
+		}
 		
 		//Reset button/item fields
 		mainItemDisplay.remove(buttonPane);
@@ -761,7 +801,12 @@ public class Display4 implements ActionListener {
 		}
 		if(event.getSource() == generateItem)
 		{
-			generateItem();
+			try {
+				generateItem();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}	
 	}
 }
