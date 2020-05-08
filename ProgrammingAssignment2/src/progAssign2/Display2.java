@@ -20,7 +20,7 @@ import com.mysql.jdbc.PreparedStatement;
 public class Display2 extends JFrame implements ActionListener{
 
 	/**
-	 * 
+	 * Creates all buttons and labels
 	 */
 	private static final long serialVersionUID = 1L;
 	JButton update = new JButton("Update");
@@ -38,6 +38,7 @@ public class Display2 extends JFrame implements ActionListener{
 	JLabel curHP = new JLabel("Current HP: 0");
 	String name;
 	
+	//connect to database
 	  public boolean activateJDBC()
 	    {
 	        try
@@ -66,6 +67,7 @@ public class Display2 extends JFrame implements ActionListener{
 	    	m_dbConn = DriverManager.getConnection(DB_LOCATION, LOGIN_NAME, PASSWORD);
 	    }
 	
+	    //start the display
 	public Display2 (){
 		
 		super("Player 1"); setBounds(100,100,150,350);
@@ -75,6 +77,7 @@ public class Display2 extends JFrame implements ActionListener{
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    Container con = this.getContentPane(); 
 	    con.add(pane); 
+	    //adds the buttons and action listeners
 	    pane.add(c1); c1.requestFocus();
 	    c1.addActionListener(this); 
 	    pane.add(c2); c2.requestFocus();
@@ -95,6 +98,7 @@ public class Display2 extends JFrame implements ActionListener{
 		
 		Object source = e.getSource();
 		
+		//checks to see which character was selected
 		if(source == c1) {
 			c.setLayout(null);;
 			c.setTitle("Dio's Stats");
@@ -212,6 +216,7 @@ public class Display2 extends JFrame implements ActionListener{
 			
 		}
 		
+		//updates stats based on characters
 		if(source == update) {
 			try {
 				strength.setText("Strength: " + getStrength(name));
@@ -227,6 +232,8 @@ public class Display2 extends JFrame implements ActionListener{
 		
 	}
 	
+	
+	//gets strength of character from database
 	public ResultSet getStrength(String name) throws SQLException {
 		this.name = name;
 		String select = new String("SELECT Strength FROM PLAYER_CHAR" +
@@ -237,6 +244,7 @@ public class Display2 extends JFrame implements ActionListener{
 		return rs;
 	}
 	
+	//gets stamina of character from database
 	public ResultSet getStamina(String name) throws SQLException {
 		this.name = name;
 		String select = new String("SELECT Stamina FROM PLAYER_CHAR" +
@@ -247,6 +255,7 @@ public class Display2 extends JFrame implements ActionListener{
 		return rs;
 	}
 	
+	//gets damage reduction of character from database
 	public ResultSet getDmgReduction(String name) throws SQLException {
 		this.name = name;
 		String select = new String("SELECT Damage reduction FROM PLAYER_CHAR" +
@@ -257,6 +266,7 @@ public class Display2 extends JFrame implements ActionListener{
 		return rs;
 	}
 	
+	//gets max HP of character from database
 	public ResultSet getMaxHP(String name) throws SQLException {
 		this.name = name;
 		String select = new String("SELECT Max_HP FROM PLAYER_CHAR" +
@@ -267,6 +277,7 @@ public class Display2 extends JFrame implements ActionListener{
 		return rs;
 	}
 	
+	//gets current HP of character from database
 	public ResultSet getCurHP(String name) throws SQLException {
 		this.name = name;
 		String select = new String("SELECT Current_HP FROM PLAYER_CHAR" +
@@ -277,6 +288,8 @@ public class Display2 extends JFrame implements ActionListener{
 		return rs;
 	}
 	
+	
+	//calls stored procedure
 	public void testCallStoredProcedure() throws Exception{
 		String sql = "CALL char_info(?)";
 		CallableStatement stmt = (CallableStatement) m_dbConn.prepareCall(sql);
