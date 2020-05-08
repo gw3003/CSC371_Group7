@@ -22,22 +22,22 @@ public class Part1 {
 		createConnection();
 		//createTableManager();
 		//createTableManagerPrivileges();
-		createTableModerator();
-		createTableModeratorPrivileges();
-		createTablePlayer();
-		createTableLocation();
-		createTableExit();
-		createTableCreature();
-		alterTableCreature();
-		createTableCreatureTerrain();
-		createTablePlayerChar();
-		createTableItem();
-		createTableArmor();
-		createTableGenericItem();
-		createTableContainer();
-		alterTableItem();
-		createTableAbility();
-		createTableWeapon();
+		//createTableModerator();
+		//createTableModeratorPrivileges();
+		//createTablePlayer();
+		//createTableLocation();
+		//createTableExit();
+		//createTableCreature();
+		//alterTableCreature();
+		//createTableCreatureTerrain();
+		//createTablePlayerChar();
+		//createTableItem();
+		//createTableArmor();
+		//createTableGenericItem();
+		//createTableContainer();
+		//alterTableItem();
+		//createTableAbility();
+		//createTableWeapon();
 	}
 	
 	/**
@@ -86,7 +86,7 @@ public class Part1 {
     public void createTableManager() throws Exception{
     	Statement statement = m_dbConn.createStatement();
 		
-		String createTable = "CREATE TABLE MANAGER" +
+		String createTable = "CREATE TABLE MANAGER " +
 							"(Login VARCHAR(16)	Not Null, " +
 							"Password VARCHAR(64) Not Null," +
 							"Email	VARCHAR(64) Not Null," +
@@ -104,7 +104,7 @@ public class Part1 {
     public void createTableManagerPrivileges() throws Exception{
     	Statement statement = m_dbConn.createStatement();
 		
-		String createTable = "CREATE TABLE MANAGER_PRIVILEGES" +
+		String createTable = "CREATE TABLE MANAGER_PRIVILEGES " +
 							"(ManLogin 		VARCHAR(16)	 Not Null, " +
 							"ManPrivilege 	VARCHAR(255) Not Null," +
 							"PRIMARY KEY(ManPrivilege, ManLogin)," +
@@ -122,10 +122,10 @@ public class Part1 {
     public void createTableModerator() throws Exception{
     	Statement statement = m_dbConn.createStatement();
 		
-		String createTable = "CREATE TABLE MODERATOR" +
+		String createTable = "CREATE TABLE MODERATOR " +
 							"(Login VARCHAR(16)	Not Null, " +
 							"Password VARCHAR(64) Not Null," +
-							"E-mail	VARCHAR(64) Not Null," +
+							"Email	VARCHAR(64) Not Null," +
 							"PRIMARY KEY(Login));";
 		
 		statement.executeUpdate(createTable);
@@ -140,11 +140,11 @@ public class Part1 {
     public void createTableModeratorPrivileges() throws Exception{
     	Statement statement = m_dbConn.createStatement();
 		
-		String createTable = "CREATE TABLE MODERATOR_PRIVILEGES" +
+		String createTable = "CREATE TABLE MODERATOR_PRIVILEGES " +
 							"(ModLogin 		VARCHAR(16)	 Not Null, " +
 							"ModPrivilege 	VARCHAR(255) Not Null," +
 							"PRIMARY KEY(ModPrivilege, ModLogin)," +
-							"FOREIGN KEY(ModLogin) REFERENCES (MODERATOR (LOGIN)));";
+							"FOREIGN KEY(ModLogin) REFERENCES MODERATOR (Login));";
 		
 		statement.executeUpdate(createTable);
 		statement.close();
@@ -158,10 +158,10 @@ public class Part1 {
     public void createTablePlayer() throws Exception{
     	Statement statement = m_dbConn.createStatement();
 		
-		String createTable = "CREATE TABLE PLAYER" +
+		String createTable = "CREATE TABLE PLAYER " +
 							"(Login 	VARCHAR(16)	Not Null, " +
 							"Password 	VARCHAR(64) Not Null," +
-							"E-mail		VARCHAR(64) Not Null," +
+							"Email		VARCHAR(64) Not Null," +
 							"PRIMARY KEY(Login));";
 		
 		statement.executeUpdate(createTable);
@@ -176,7 +176,7 @@ public class Part1 {
     public void createTableLocation() throws Exception{
     	Statement statement = m_dbConn.createStatement();
 		
-		String createTable = "CREATE TABLE LOCATION" +
+		String createTable = "CREATE TABLE LOCATION " +
 							"(LocID 	CHAR(16)	Not Null, " +
 							"LocType 	VARCHAR(64) ," +
 							"Size		INT ," +
@@ -194,13 +194,13 @@ public class Part1 {
     public void createTableExit() throws Exception{
     	Statement statement = m_dbConn.createStatement();
 		
-		String createTable = "CREATE TABLE EXIT" +
-							"(LocID 	CHAR(16) Not Null, " +
-							"exitLocID 	CHAR(64) Not Null," +
-							"Location	VARCHAR(64) ," +
+		String createTable = "CREATE TABLE LOCATION_EXIT " +
+							"(LocID CHAR(16) Not Null, " +
+							"exitLocID CHAR(16) Not Null, " +
+							"Location VARCHAR(64), " +
 							"PRIMARY KEY(LocID, exitLocID)," +
-							"FOREIGN KEY(LocID) REFERENCES(LOCATION (LocID))," +
-							"FOREIGN KEY(exitLocID) REFERENCES(LOCATION (LocID)));";
+							"FOREIGN KEY(LocID) REFERENCES LOCATION (LocID)," +
+							"FOREIGN KEY(exitLocID) REFERENCES LOCATION (LocID));";
 		
 		statement.executeUpdate(createTable);
 		statement.close();
@@ -214,7 +214,7 @@ public class Part1 {
     public void createTableCreature() throws Exception{
     	Statement statement = m_dbConn.createStatement();
 		
-		String createTable = "CREATE TABLE CREATURE" +
+		String createTable = "CREATE TABLE CREATURE " +
 							"(Strength Int, " +
 							"Stamina Int," +
 							"Damage_Reduction Int," +
@@ -225,7 +225,7 @@ public class Part1 {
 							"Likes CHAR(16) Not Null," +
 							"Dislikes CHAR(16) Not Null," +
 							"PRIMARY KEY(CreID)," +
-							"FOREIGN KEY(LocID) REFERENCES (LOCATION (LocID)));";
+							"FOREIGN KEY(LocID) REFERENCES LOCATION (LocID));";
 		
 		statement.executeUpdate(createTable);
 		statement.close();
@@ -239,9 +239,9 @@ public class Part1 {
     public void alterTableCreature() throws Exception{
     	Statement statement = m_dbConn.createStatement();
     	
-    	String alterTable = "ALTER TABLE CREATURE" +
-    						"(ADD FOREIGN KEY(Likes) REFERNCES(CREATURE(CreID))" +
-    						"ADD FOREIGN KEY(Dislikes) REFERNCES(CREATURE(CreID)));";
+    	String alterTable = "ALTER TABLE CREATURE " +
+    						"ADD FOREIGN KEY(Likes) REFERENCES CREATURE (CreID), " +
+    						"ADD FOREIGN KEY(Dislikes) REFERENCES CREATURE (CreID);";
     	
     	statement.executeUpdate(alterTable);
     	statement.close();
@@ -255,11 +255,11 @@ public class Part1 {
     public void createTableCreatureTerrain() throws Exception{
     	Statement statement = m_dbConn.createStatement();
 		
-		String createTable = "CREATE TABLE CREATURE_TERRAIN" +
+		String createTable = "CREATE TABLE CREATURE_TERRAIN " +
 							"(CreID 	CHAR(16) Not Null, " +
 							"Area 	VARCHAR(64) Not Null," +
 							"PRIMARY KEY(CreID, Area)," +
-							"FOREIGN KEY(CreID) REFERENCES(CREATURE (CreID)));";
+							"FOREIGN KEY(CreID) REFERENCES CREATURE (CreID));";
 		
 		statement.executeUpdate(createTable);
 		statement.close();
@@ -273,10 +273,10 @@ public class Part1 {
     public void createTablePlayerChar() throws Exception{
     	Statement statement = m_dbConn.createStatement();
 		
-		String createTable = "CREATE TABLE PLAYER_CHAR" +
+		String createTable = "CREATE TABLE PLAYER_CHAR " +
 							"(LocID CHAR(16) Not Null," +
 							"Strength Int, " +
-							"Stamina Int," +
+							"Stamina Int, " +
 							"Location VARCHAR(64)," +
 							"PName VARCHAR(64)," +
 							"Max_HP INT," +
@@ -285,9 +285,9 @@ public class Part1 {
 							"Liked_By CHAR(16) Not Null," +
 							"Disliked_By CHAR(16) Not Null," +
 							"PRIMARY KEY(PName)," +
-							"FOREIGN KEY(Liked_By) REFERENCES CREATURE (CreID)" +
-							"FOREIGN KEY(Disliked_By) REFERENCES CREATURE (CreID)" +
-							"FOREIGN KEY(Player_Login) REFERENCES PLAYER (Login)" +
+							"FOREIGN KEY(Liked_By) REFERENCES CREATURE (CreID)," +
+							"FOREIGN KEY(Disliked_By) REFERENCES CREATURE (CreID)," +
+							"FOREIGN KEY(Player_Login) REFERENCES PLAYER (Login)," +
 							"FOREIGN KEY(LocID) REFERENCES LOCATION (LocID));";
 		
 		statement.executeUpdate(createTable);
@@ -348,7 +348,7 @@ public class Part1 {
 		
 		String createTable = "CREATE TABLE GENERIC_ITEM" +
 							"(genItemID CHAR(16) Not Null, " +
-							"Volume INT)," +
+							"Volume INT," +
 							"Mass INT," +
 							"ItemID CHAR(16)," +
 							"PRIMARY KEY(genItemID)," +
@@ -388,8 +388,8 @@ public class Part1 {
    public void alterTableItem() throws Exception{
    	Statement statement = m_dbConn.createStatement();
    	
-   	String alterTable = "ALTER TABLE ITEM" +
-   						"(ADD FOREIGN KEY(ConID) REFERNCES CONTAINER (ConID));";
+   	String alterTable = "ALTER TABLE ITEM " +
+   						"ADD FOREIGN KEY(ConID) REFERENCES CONTAINER (ConID);";
    	
    	statement.executeUpdate(alterTable);
    	statement.close();
