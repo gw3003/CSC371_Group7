@@ -608,7 +608,7 @@ public class Display4 implements ActionListener {
 		volume = new JTextField();
 		buttonPane.add(volume);
 		
-		buttonPane.add(new JLabel("Enter maximum weight"));
+		buttonPane.add(new JLabel("Enter maximum mass"));
 		val1 = new JTextField();
 		buttonPane.add(val1);
 		
@@ -667,15 +667,43 @@ public class Display4 implements ActionListener {
 			stmt.setString(1, id.getText());
 			stmt.setInt(2, Integer.parseInt(volume.getText()));
 			stmt.setInt(3, Integer.parseInt(mass.getText()));
-			stmt.setString(4, val2.getText());
-			stmt.setInt(5, Integer.parseInt(val1.getText()));
+			stmt.setString(4, val1.getText());
+			stmt.setInt(5, Integer.parseInt(val2.getText()));
 			stmt.execute();
 			break;
 		case 3:
+			//Add item
+			stmt.setString(2, chars[currentChar]);
+			stmt.setString(3, null);
+			stmt.execute();
+			
 			//weapon
+			sql = "CALL addWeapon(?,?,?,?,?)";
+			stmt = m_dbConn.prepareCall(sql);
+			stmt.setString(1, id.getText());
+			stmt.setInt(2, Integer.parseInt(volume.getText()));
+			stmt.setInt(3, Integer.parseInt(mass.getText()));
+			stmt.setString(4, fId1.getText());
+			stmt.setString(5, val1.getText());
+			stmt.execute();
+			
 			break;
 		case 4:
+			//Add item
+			stmt.setString(2, null);
+			stmt.setString(3, chars[currentChar]);
+			stmt.execute();
+			
 			//container
+			sql = "CALL addContainer(?,?,?,?,?)";
+			stmt = m_dbConn.prepareCall(sql);
+			stmt.setString(1, id.getText());
+			stmt.setInt(2, Integer.parseInt(volume.getText()));
+			stmt.setInt(3, Integer.parseInt(mass.getText()));
+			stmt.setInt(4, Integer.parseInt(val2.getText()));
+			stmt.setInt(5, Integer.parseInt(val1.getText()));
+			stmt.execute();
+			
 			break;
 		}
 		
