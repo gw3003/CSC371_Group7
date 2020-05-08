@@ -73,9 +73,11 @@ public class Display4 implements ActionListener {
 	private JTextField volume = null;
 	private JTextField id = null;
 	private JTextField fId1 = null;
-	private JTextField fId2 = null;
 	private JTextField val1 = null;
 	private JTextField val2 = null;
+	
+	//Setup
+	private JTextField player = null;
 
 	public Display4() throws SQLException
 	{
@@ -84,7 +86,6 @@ public class Display4 implements ActionListener {
 //		DatabaseMetaData meta = m_dbConn.getMetaData();
 //		activateJDBC();
 		
-		this.playerName = "Bob";
 		//Activate GUI
 		activateGUI();
 	}
@@ -96,11 +97,19 @@ public class Display4 implements ActionListener {
 	{
 		mainFrame = new JFrame();
 		
-		mainFrame.add(generateInitialMainPanel());
-		
+		//Quick frame to get the desired player name to get characters for
+		JPanel startPane = new JPanel();
+		GridLayout grid = new GridLayout(2,1);
+		startPane.setLayout(grid);
+		startPane.add(new JLabel("Enter player you wish to see"));
+		player = new JTextField();
+		player.addActionListener(this);
+		startPane.add(player);
+		mainFrame.add(startPane);
 		//packs then displays the GUI
 		mainFrame.pack();
 		mainFrame.setVisible(true);
+		
 	}
 	
 	
@@ -566,6 +575,16 @@ public class Display4 implements ActionListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent event) {
+		if(event.getSource() == player)
+		{
+			playerName = player.getText();
+			mainFrame = new JFrame();
+			mainFrame.add(generateInitialMainPanel());
+			mainFrame.revalidate();
+			mainFrame.repaint();
+			mainFrame.pack();
+			mainFrame.setVisible(true);
+		}
 		if(event.getSource() == charButtons[0])
 		{
 			currentChar = 0;
@@ -626,6 +645,6 @@ public class Display4 implements ActionListener {
 		if(event.getSource() == generateItem)
 		{
 			generateItem();
-		}
+		}	
 	}
 }
