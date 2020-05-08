@@ -293,7 +293,7 @@ public class Display4 implements ActionListener {
 		generic = new JButton("Generic Item");
 		generic.addActionListener(this);
 		armor = new JButton("Armor");
-		generic.addActionListener(this);
+		armor.addActionListener(this);
 		weapon = new JButton("Weapon");
 		weapon.addActionListener(this);
 		container = new JButton("Bag");
@@ -401,12 +401,141 @@ public class Display4 implements ActionListener {
 		mainFrame.setVisible(true);
 	}
 
+	/**
+	 * Builds the armor item frame
+	 */
 	private void buildArmorItem()
 	{
+		mainItemDisplay.remove(buttonPane);
+		buttonPane = new JPanel();
+		GridLayout grid = new GridLayout(12,1);
+		buttonPane.setLayout(grid);
 		
+		buttonPane.add(new JLabel("Enter stats for Armor Item"));
+		
+		buttonPane.add(new JLabel("Enter item name"));
+		id = new JTextField();
+		buttonPane.add(id);
+		
+		buttonPane.add(new JLabel("Enter weight"));
+		weight = new JTextField();
+		buttonPane.add(weight);
+		
+		buttonPane.add(new JLabel("Enter volume"));
+		volume = new JTextField();
+		buttonPane.add(volume);
+		
+		buttonPane.add(new JLabel("Enter Damage Reduction"));
+		val1 = new JTextField();
+		buttonPane.add(val1);
+		
+		
+		buttonPane.add(new JLabel("Enter Slot"));
+		val2 = new JTextField();
+		buttonPane.add(val2);
+		
+		generateItem = new JButton("Create Item");
+		generateItem.addActionListener(this);
+		buttonPane.add(generateItem);
+		
+		mainItemDisplay.add(buttonPane);
+		mainItemDisplay.revalidate();
+		mainItemDisplay.repaint();
+		mainFrame.revalidate();
+		mainFrame.repaint();
+		mainFrame.pack();
+		mainFrame.setVisible(true);
 	}
 	
+	/**
+	 * Allows for a weapon item to be created
+	 */
+	private void buildWeaponItem()
+	{
+		mainItemDisplay.remove(buttonPane);
+		buttonPane = new JPanel();
+		GridLayout grid = new GridLayout(12,1);
+		buttonPane.setLayout(grid);
+		
+		buttonPane.add(new JLabel("Enter stats for Weapon Item"));
+		
+		buttonPane.add(new JLabel("Enter item name"));
+		id = new JTextField();
+		buttonPane.add(id);
+		
+		buttonPane.add(new JLabel("Enter weight"));
+		weight = new JTextField();
+		buttonPane.add(weight);
+		
+		buttonPane.add(new JLabel("Enter volume"));
+		volume = new JTextField();
+		buttonPane.add(volume);
+		
+		buttonPane.add(new JLabel("Enter associated ability"));
+		fId1 = new JTextField();
+		buttonPane.add(fId1);
+		
+		buttonPane.add(new JLabel("Enter where weapon is currently held"));
+		val1 = new JTextField();
+		buttonPane.add(val1);
+		
+		generateItem = new JButton("Create Item");
+		generateItem.addActionListener(this);
+		buttonPane.add(generateItem);
+		
+		mainItemDisplay.add(buttonPane);
+		mainItemDisplay.revalidate();
+		mainItemDisplay.repaint();
+		mainFrame.revalidate();
+		mainFrame.repaint();
+		mainFrame.pack();
+		mainFrame.setVisible(true);
+	}
 	
+	/**
+	 * Sets layout for building a container item
+	 */
+	private void buildContainerItem()
+	{
+		mainItemDisplay.remove(buttonPane);
+		buttonPane = new JPanel();
+		GridLayout grid = new GridLayout(12,1);
+		buttonPane.setLayout(grid);
+		
+		buttonPane.add(new JLabel("Enter stats for Container Item"));
+		
+		buttonPane.add(new JLabel("Enter item name"));
+		id = new JTextField();
+		buttonPane.add(id);
+		
+		buttonPane.add(new JLabel("Enter weight"));
+		weight = new JTextField();
+		buttonPane.add(weight);
+		
+		buttonPane.add(new JLabel("Enter volume"));
+		volume = new JTextField();
+		buttonPane.add(volume);
+		
+		buttonPane.add(new JLabel("Enter maximum weight"));
+		val1 = new JTextField();
+		buttonPane.add(val1);
+		
+		buttonPane.add(new JLabel("Enter maximum volume"));
+		val2 = new JTextField();
+		buttonPane.add(val2);
+		
+		generateItem = new JButton("Create Item");
+		generateItem.addActionListener(this);
+		buttonPane.add(generateItem);
+		
+		mainItemDisplay.add(buttonPane);
+		mainItemDisplay.revalidate();
+		mainItemDisplay.repaint();
+		mainFrame.revalidate();
+		mainFrame.repaint();
+		mainFrame.pack();
+		mainFrame.setVisible(true);
+	}
 	
 	/**
 	 * Will attempt to add an item to database
@@ -486,11 +615,13 @@ public class Display4 implements ActionListener {
 		}
 		if(event.getSource() == weapon)
 		{
-			
+			editedItem = 3;
+			buildWeaponItem();
 		}
 		if(event.getSource() == container)
 		{
-			
+			editedItem = 4;
+			buildContainerItem();
 		}
 		if(event.getSource() == generateItem)
 		{
