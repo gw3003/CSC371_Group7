@@ -4,10 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -37,7 +40,7 @@ public class Display4 implements ActionListener {
 	
 	//character data
 	private JButton charButtons[] = null;
-	private String[] chars = {"Dio", "Jonathan", "Jotaro", "Joseph", "Speedwagon"};
+	private String[] chars = null;
 	private static final int MAX_NUM_OF_CHARS = 5;
 	private int currentChar = -1;
 	
@@ -69,22 +72,23 @@ public class Display4 implements ActionListener {
 	
 	//Text fields
 	private JTextField deleteField = null;
-	private JTextField weight = null;
+	private JTextField mass = null;
 	private JTextField volume = null;
 	private JTextField id = null;
 	private JTextField fId1 = null;
-	private JTextField fId2 = null;
 	private JTextField val1 = null;
 	private JTextField val2 = null;
+	
+	//Setup
+	private JTextField player = null;
 
 	public Display4() throws SQLException
 	{
 		//Initialize db
-//		m_dbConn = DriverManager.getConnection(DB_LOCATION, LOGIN_NAME, PASSWORD);
-//		DatabaseMetaData meta = m_dbConn.getMetaData();
-//		activateJDBC();
+		m_dbConn = DriverManager.getConnection(DB_LOCATION, LOGIN_NAME, PASSWORD);
+		DatabaseMetaData meta = m_dbConn.getMetaData();
+		activateJDBC();
 		
-		this.playerName = "Bob";
 		//Activate GUI
 		activateGUI();
 	}
@@ -96,11 +100,19 @@ public class Display4 implements ActionListener {
 	{
 		mainFrame = new JFrame();
 		
-		mainFrame.add(generateInitialMainPanel());
-		
+		//Quick frame to get the desired player name to get characters for
+		JPanel startPane = new JPanel();
+		GridLayout grid = new GridLayout(2,1);
+		startPane.setLayout(grid);
+		startPane.add(new JLabel("Enter player you wish to see"));
+		player = new JTextField();
+		player.addActionListener(this);
+		startPane.add(player);
+		mainFrame.add(startPane);
 		//packs then displays the GUI
 		mainFrame.pack();
 		mainFrame.setVisible(true);
+		
 	}
 	
 	
@@ -159,12 +171,11 @@ public class Display4 implements ActionListener {
 		//Creates grid that will display characters
 		//TODO adjust to work with a changing number of characters
 		GridLayout charGrid = new GridLayout(MAX_NUM_OF_CHARS,1);
-		JPanel west = new JPanel();
-		west.setLayout(charGrid);
-		generateCharList(west);
-		mainPanel.add("West", west);
+		charPanel = new JPanel();
+		charPanel.setLayout(charGrid);
+		generateCharList(charPanel);
+		mainPanel.add("West", charPanel);
 		
-		//TODO Update once database becomes usable to query for the right items
 		//Creates main item display area
 		mainItemDisplay = new JPanel();
 		BorderLayout itemArea = new BorderLayout();
@@ -219,21 +230,57 @@ public class Display4 implements ActionListener {
 		GridLayout grid = new GridLayout(MAX_NUM_OF_ITEMS+1, 1);
 		itemPane.setLayout(grid);
 		
-		//TODO Update with SQL code
 		//generate item pane
-		String[] items = {"Clacky Balls", "Lucky Sword", "Plucky Sword", "Bag of Holding"};
-		JLabel iLabel[] = new JLabel[MAX_NUM_OF_ITEMS];
+		String[] items;
+		try {
+			items = getCharItems();
+			JLabel iLabel[] = new JLabel[MAX_NUM_OF_ITEMS];
+			
+			itemPane.add(new JLabel(chars[currentChar] + "'s items"));
+			
+			for(int i=0; i< items.length; i++)
+			{
+				iLabel[i] = new JLabel(items[i]);
+				itemPane.add("West", iLabel[i]);
+			}
+			
+			pane.add("West",itemPane);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}	
+	}
+	
+	/**
+	 * Queries the database to get an items a character has
+	 * @throws SQLException 
+	 */
+	private String[] getCharItems() throws SQLException
+	{
+		String[] items;
 		
-		itemPane.add(new JLabel(chars[currentChar] + "'s items"));
-		
-		for(int i=0; i< items.length; i++)
+		String sql = "CALL getCharItems(?)";
+		CallableStatement stmt = m_dbConn.prepareCall(sql);
+		try {
+			stmt.setString(1, chars[currentChar]);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		stmt.execute();
+		ResultSet set = stmt.getResultSet();
+		ArrayList<String> theseItems = new ArrayList<String>();
+		while(set.next())
 		{
-			iLabel[i] = new JLabel(items[i]);
-			itemPane.add("West", iLabel[i]);
+			theseItems.add(set.getString("ItemID"));
+		}
+		int size = theseItems.size();
+		items = new String[size];
+		
+		for(int i = 0; i < size; i++)
+		{
+			items[i] = theseItems.get(i);
 		}
 		
-		pane.add("West",itemPane);
-		
+		return items;
 	}
 	
 	/**
@@ -338,8 +385,6 @@ public class Display4 implements ActionListener {
 		mainFrame.repaint();
 		mainFrame.pack();
 		mainFrame.setVisible(true);
-		
-		
 	}
 	
 	/**
@@ -347,8 +392,55 @@ public class Display4 implements ActionListener {
 	 */
 	private void executeDelete(String deleteTarget)
 	{
-		//TODO add delete sql statement
-		
+		//Daisy chains through try/catch blocks till it can successfully delete
+		String sql = "CALL deleteGenItem(?)";
+		try {
+			CallableStatement stmt = m_dbConn.prepareCall(sql);
+			stmt.setString(1, deleteTarget);
+			stmt.execute();
+			sql = "CALL deleteItem(?)";
+			stmt = m_dbConn.prepareCall(sql);
+			stmt.setString(1, deleteTarget);
+			stmt.execute();
+			
+		} catch (SQLException e) {
+			
+			try {
+				sql = "CALL deleteArmor(?)";
+				CallableStatement stmt = m_dbConn.prepareCall(sql);
+				stmt.setString(1, deleteTarget);
+				stmt.execute();
+				sql = "CALL deleteItem(?)";
+				stmt = m_dbConn.prepareCall(sql);
+				stmt.setString(1, deleteTarget);
+				stmt.execute();
+			} catch (SQLException e1) {
+				try {
+					sql = "CALL deleteWeapon(?)";
+					CallableStatement stmt = m_dbConn.prepareCall(sql);
+					stmt.setString(1, deleteTarget);
+					stmt.execute();
+					sql = "CALL deleteItem(?)";
+					stmt = m_dbConn.prepareCall(sql);
+					stmt.setString(1, deleteTarget);
+					stmt.execute();
+				} catch (SQLException e2) {
+					try {
+						sql = "CALL deleteContainer(?)";
+						CallableStatement stmt = m_dbConn.prepareCall(sql);
+						stmt.setString(1, deleteTarget);
+						stmt.execute();
+						sql = "CALL deleteItem(?)";
+						stmt = m_dbConn.prepareCall(sql);
+						stmt.setString(1, deleteTarget);
+						stmt.execute();
+					} catch (SQLException e3) {
+						e3.printStackTrace();
+					}
+				}
+			}
+			
+		}
 		//Reset button/item fields
 		mainItemDisplay.remove(buttonPane);
 		mainItemDisplay.remove(itemPane);
@@ -380,9 +472,9 @@ public class Display4 implements ActionListener {
 		id = new JTextField();
 		buttonPane.add(id);
 		
-		buttonPane.add(new JLabel("Enter weight"));
-		weight = new JTextField();
-		buttonPane.add(weight);
+		buttonPane.add(new JLabel("Enter mass"));
+		mass = new JTextField();
+		buttonPane.add(mass);
 		
 		buttonPane.add(new JLabel("Enter volume"));
 		volume = new JTextField();
@@ -418,8 +510,8 @@ public class Display4 implements ActionListener {
 		buttonPane.add(id);
 		
 		buttonPane.add(new JLabel("Enter weight"));
-		weight = new JTextField();
-		buttonPane.add(weight);
+		mass = new JTextField();
+		buttonPane.add(mass);
 		
 		buttonPane.add(new JLabel("Enter volume"));
 		volume = new JTextField();
@@ -464,8 +556,8 @@ public class Display4 implements ActionListener {
 		buttonPane.add(id);
 		
 		buttonPane.add(new JLabel("Enter weight"));
-		weight = new JTextField();
-		buttonPane.add(weight);
+		mass = new JTextField();
+		buttonPane.add(mass);
 		
 		buttonPane.add(new JLabel("Enter volume"));
 		volume = new JTextField();
@@ -509,14 +601,14 @@ public class Display4 implements ActionListener {
 		buttonPane.add(id);
 		
 		buttonPane.add(new JLabel("Enter weight"));
-		weight = new JTextField();
-		buttonPane.add(weight);
+		mass = new JTextField();
+		buttonPane.add(mass);
 		
 		buttonPane.add(new JLabel("Enter volume"));
 		volume = new JTextField();
 		buttonPane.add(volume);
 		
-		buttonPane.add(new JLabel("Enter maximum weight"));
+		buttonPane.add(new JLabel("Enter maximum mass"));
 		val1 = new JTextField();
 		buttonPane.add(val1);
 		
@@ -540,10 +632,80 @@ public class Display4 implements ActionListener {
 	/**
 	 * Will attempt to add an item to database
 	 * then revert displays back to normal
+	 * @throws SQLException 
 	 */
-	private void generateItem()
+	private void generateItem() throws SQLException
 	{
-		//TODO Add SQL
+		String isql = "CALL addItem(?,?,?)";
+		CallableStatement stmt = m_dbConn.prepareCall(isql);
+		stmt.setString(1, id.getText());
+		String sql = "";
+		
+		switch (editedItem) {
+		case 1:
+			//Add item
+			stmt.setString(2, null);
+			stmt.setString(3, chars[currentChar]);
+			stmt.execute();
+			//add generic item
+			sql = "CALL addGenItem(?,?,?)";
+			stmt = m_dbConn.prepareCall(sql);
+			stmt.setString(1, id.getText());
+			stmt.setInt(2, Integer.parseInt(volume.getText()));
+			stmt.setInt(3, Integer.parseInt(mass.getText()));
+			stmt.execute();
+			
+			break;
+		case 2:
+			//Add item
+			stmt.setString(2, chars[currentChar]);
+			stmt.setString(3, null);
+			stmt.execute();
+			
+			sql = "CALL addArmor(?,?,?,?,?)";
+			stmt = m_dbConn.prepareCall(sql);
+			stmt.setString(1, id.getText());
+			stmt.setInt(2, Integer.parseInt(volume.getText()));
+			stmt.setInt(3, Integer.parseInt(mass.getText()));
+			stmt.setString(4, val1.getText());
+			stmt.setInt(5, Integer.parseInt(val2.getText()));
+			stmt.execute();
+			break;
+		case 3:
+			//Add item
+			stmt.setString(2, chars[currentChar]);
+			stmt.setString(3, null);
+			stmt.execute();
+			
+			//weapon
+			sql = "CALL addWeapon(?,?,?,?,?)";
+			stmt = m_dbConn.prepareCall(sql);
+			stmt.setString(1, id.getText());
+			stmt.setInt(2, Integer.parseInt(volume.getText()));
+			stmt.setInt(3, Integer.parseInt(mass.getText()));
+			stmt.setString(4, fId1.getText());
+			stmt.setString(5, val1.getText());
+			stmt.execute();
+			
+			break;
+		case 4:
+			//Add item
+			stmt.setString(2, null);
+			stmt.setString(3, chars[currentChar]);
+			stmt.execute();
+			
+			//container
+			sql = "CALL addContainer(?,?,?,?,?)";
+			stmt = m_dbConn.prepareCall(sql);
+			stmt.setString(1, id.getText());
+			stmt.setInt(2, Integer.parseInt(volume.getText()));
+			stmt.setInt(3, Integer.parseInt(mass.getText()));
+			stmt.setInt(4, Integer.parseInt(val2.getText()));
+			stmt.setInt(5, Integer.parseInt(val1.getText()));
+			stmt.execute();
+			
+			break;
+		}
 		
 		//Reset button/item fields
 		mainItemDisplay.remove(buttonPane);
@@ -561,11 +723,53 @@ public class Display4 implements ActionListener {
 	}
 	
 	/**
+	 * Queries database to get the list of characters for a player
+	 * @param targetPlayer
+	 * @throws SQLException 
+	 */
+	private void getCharList(String targetPlayer) throws SQLException
+	{
+		String sql = "CALL getCharList(?)";
+		CallableStatement stmt = m_dbConn.prepareCall(sql);
+		stmt.setString(1, targetPlayer);
+		stmt.execute();
+		ResultSet set = stmt.getResultSet();
+		ArrayList<String> theseChars = new ArrayList<String>();
+		while(set.next())
+		{
+			theseChars.add(set.getString("PName"));
+		}
+		int size = theseChars.size();
+		chars = new String[size];
+		
+		for(int i = 0; i < size; i++)
+		{
+			chars[i] = theseChars.get(i);
+		}
+		
+	}
+	
+	/**
 	 * Contains the actions for the events
 	 * @param event
 	 */
 	@Override
 	public void actionPerformed(ActionEvent event) {
+		if(event.getSource() == player)
+		{
+			playerName = player.getText();
+			mainFrame = new JFrame();
+			try {
+				getCharList(player.getText());
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			mainFrame.add(generateInitialMainPanel());
+			mainFrame.revalidate();
+			mainFrame.repaint();
+			mainFrame.pack();
+			mainFrame.setVisible(true);
+		}
 		if(event.getSource() == charButtons[0])
 		{
 			currentChar = 0;
@@ -625,7 +829,12 @@ public class Display4 implements ActionListener {
 		}
 		if(event.getSource() == generateItem)
 		{
-			generateItem();
-		}
+			try {
+				generateItem();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}	
 	}
 }
