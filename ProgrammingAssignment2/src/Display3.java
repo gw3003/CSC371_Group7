@@ -101,6 +101,7 @@ public class Display3 extends JFrame
       westPanel = new JPanel();
       westPanel.setLayout(new BorderLayout());
       spacing5 = new JLabel("     "); spacing6 = new JLabel("     "); spacing7 = new JLabel("     ");
+      roomNumbers[4].setText(" YOU ");
       westPanel.add(roomPanel, BorderLayout.CENTER);
       westPanel.add(spacing5, BorderLayout.NORTH);
       westPanel.add(spacing6, BorderLayout.SOUTH);
