@@ -30,19 +30,20 @@ public class InsertStatements {
 		System.out.println("Commencing table population");
 		
 		//populateManager();
-		populateModerator();
-		populateSpecialAbilities();
-		populatePlayers();
-		populateLocation();
-		populateExits();
-		populateCreatures();
-		populateAreas();
-		populatePlayerChar();
-		populateItem();
-		populateArmor();
-		populateGenericItem();
-		populateContainer();
-		populateAbility();
+		//populateModerator();
+		//populateModeratorAbilities();
+		//populateManagerAbilities();
+		//populatePlayers();
+		//SHOW populateLocation();
+		//populateExits();
+		//populateCreatures();
+		//populateAreas();
+		//populatePlayerChar();
+		//populateItem();
+		//populateArmor();
+		//populateGenericItem();
+		//populateContainer();
+		//populateAbility();
 		populateWeapon();
 		
 		System.out.println("Complete!");
@@ -112,16 +113,35 @@ public class InsertStatements {
 	 * Populate special abilities for moderators
 	 * @throws SQLException
 	 */
-	private void populateSpecialAbilities() throws SQLException
+	private void populateModeratorAbilities() throws SQLException
 	{
 		Statement state = m_dbConn.createStatement();
 		
-		String sql = "INSERT INTO SPECIAL_ABILITIES(ModLogin, Special_Ability) VALUES"
+		String sql = "INSERT INTO MODERATOR_PRIVILEGES(ModLogin, ModPrivilege) VALUES"
 				+ "('moderator1', 'WhateverModeratorsSpecialAbilityCanBe?'),"
 				+ "('moderator2', 'WhateverModeratorsSpecialAbilityCanBe2?'),"
 				+ "('moderator3', 'WhateverModeratorsSpecialAbilityCanBe3?'),"
 				+ "('moderator4', 'WhateverModeratorsSpecialAbilityCanBe4?'),"
 				+ "('moderator5', 'WhateverModeratorsSpecialAbilityCanBe5?');";
+		
+		state.execute(sql);
+
+	}
+	
+	/**
+	 * Populate special abilities for managers
+	 * @throws SQLException
+	 */
+	private void populateManagerAbilities() throws SQLException
+	{
+		Statement state = m_dbConn.createStatement();
+		
+		String sql = "INSERT INTO MANAGER_PRIVILEGES(ManLogin, ManPrivilege) VALUES"
+				+ "('manager1', 'WhateverModeratorsSpecialAbilityCanBe?'),"
+				+ "('manager2', 'WhateverModeratorsSpecialAbilityCanBe2?'),"
+				+ "('manager3', 'WhateverModeratorsSpecialAbilityCanBe3?'),"
+				+ "('manager4', 'WhateverModeratorsSpecialAbilityCanBe4?'),"
+				+ "('manager5', 'WhateverModeratorsSpecialAbilityCanBe5?');";
 		
 		state.execute(sql);
 
@@ -154,8 +174,8 @@ public class InsertStatements {
 	{
 		Statement state = m_dbConn.createStatement();
 		
-		String sql = "INSERT INTO LOCATION(LocID, LocationType, Size) VALUES"
-				+ "('FOREST', 'Undead Forest', 10000'),"
+		String sql = "INSERT INTO LOCATION(LocID, LocType, Size) VALUES"
+				+ "('FOREST', 'Undead Forest', 10000),"
 				+ "('SCHOOL', 'Place of Study', 10000),"
 				+ "('MANSION', 'Spooky Mansion', 10000),"
 				+ "('POOL', 'Place of Sharks', 10000),"
@@ -173,7 +193,7 @@ public class InsertStatements {
 	{
 		Statement state = m_dbConn.createStatement();
 		
-		String sql = "INSERT INTO EXITS(LocID, exitLocID, Location) VALUES"
+		String sql = "INSERT INTO LOCATION_EXIT(LocID, exitLocID, Location) VALUES"
 				+ "('FOREST', 'SCHOOL', 'Shippensburg University'),"
 				+ "('SCHOOL', 'FOREST', 'Forest of the Dead'),"
 				+ "('MANSION', 'POOL', 'Gatsby Mansion'),"
@@ -211,7 +231,7 @@ public class InsertStatements {
 	{
 		Statement state = m_dbConn.createStatement();
 		
-		String sql = "INSERT INTO AREA_CAN_GO_TO(creID, Area) VALUES"
+		String sql = "INSERT INTO CREATURE_TERRAIN(creID, Area) VALUES"
 				+ "(999, 'FOREST'),"
 				+ "(998, 'SCHOOL'),"
 				+ "(997, 'MANSION'),"
@@ -230,12 +250,12 @@ public class InsertStatements {
 	{
 		Statement state = m_dbConn.createStatement();
 		
-		String sql = "INSERT INTO PLAYER_CHAR(locID, Strength, Stamina, Location, PName, Max_HP, Current_HP, Player_Login, Disliked_By, Liked_By) VALUES"
-				+ "('FOREST', 60, 80, 30, 'FOREST', 'Dio', 200, 200, 'player1', '998', '999'),"
-				+ "('SCHOOL', 60, 80, 30, 'SCHOOL', 'Joseph', 200, 200, 'player1', '997', '995'),"
-				+ "('MANSION', 60, 80, 30, 'MANSION', 'Jonathan', 200, 200, 'player1', '996', '999'),"
-				+ "('POOL', 60, 80, 30, 'POOL', 'Jotaro', 200, 200, 'player1', '995', '998'),"
-				+ "('PLAIN', 60, 80, 30, 'PLAIN', 'Speedwagon', 200, 200, 'player1', '997', '998');";
+		String sql = "INSERT INTO PLAYER_CHAR(LocID, Strength, Stamina, Location, PName, Max_HP, Current_HP, Player_Login, Liked_By, DisLiked_By) VALUES"
+				+ "('FOREST', 60, 80, 'FOREST', 'Dio', 200, 200, 'player1', '998', '999'),"
+				+ "('SCHOOL', 60, 80, 'SCHOOL', 'Joseph', 200, 200, 'player1', '997', '995'),"
+				+ "('MANSION', 60, 80, 'MANSION', 'Jonathan', 200, 200, 'player1', '996', '999'),"
+				+ "('POOL', 60, 80, 'POOL', 'Jotaro', 200, 200, 'player1', '995', '998'),"
+				+ "('PLAIN', 60, 80, 'PLAIN', 'Speedwagon', 200, 200, 'player2', '997', '998');";
 		
 		state.execute(sql);
 
@@ -250,11 +270,26 @@ public class InsertStatements {
 		Statement state = m_dbConn.createStatement();
 		
 		String sql = "INSERT INTO ITEM(ItemID, WornItem, PossessedItem, locID) VALUES"
-				+ "('I500',  'TRUE', 'TRUE', 'FOREST'),"
-				+ "('I100', 'TRUE', 'TRUE', 'FOREST'),"
-				+ "('I200', 'FALSE', 'TRUE', 'POOL'),"
-				+ "('I300', 'TRUE', 'FALSE', 'MANSION'),"
-				+ "('I400', 'TRUE', 'TRUE', 'MANSION');";
+				+ "('Sword of Luck', NULL,'Jonathan', NULL),"
+				+ "('Clacky Balls', NULL, 'Joseph',NULL),"
+				+ "('Hermit Purple', NULL, 'Joseph', NULL),"
+				+ "('Sharp Claws', NULL, 'Dio', NULL),"
+				+ "('The World', NULL, 'Dio', NULL),"
+				+ "('Cool Hat', 'Jotaro', NULL, NULL),"
+				+ "('Fancy Hat', 'Speedwagon', NULL, NULL),"
+				+ "('Crazy Headband', 'Joseph', NULL, NULL),"
+				+ "('Black Jacket', 'Jotaro', NULL, NULL),"
+				+ "('Suit', 'Jonathan', NULL, NULL),"
+				+ "('Metal Ball', NULL, 'Joseph', NULL),"
+				+ "('Round Ball', NULL, 'Joseph', NULL),"
+				+ "('Square Ball', NULL, 'Joseph', NULL),"
+				+ "('Book', NULL, 'Dio', NULL),"
+				+ "('Sharp Object', NULL, 'Dio', NULL),"
+				+ "('Bag', NULL, 'Speedwagon', NULL),"
+				+ "('Backpack', NULL, 'Jonathan', NULL),"
+				+ "('Pockets', NULL, 'Joseph', NULL),"
+				+ "('Secret bag', NULL, 'Jotaro', NULL),"
+				+ "('Cool bag', NULL, 'Dio', NULL);";
 		
 		state.execute(sql);
 
@@ -268,12 +303,12 @@ public class InsertStatements {
 	{
 		Statement state = m_dbConn.createStatement();
 		
-		String sql = "INSERT INTO ARMOR(aID, Damage_Reduction, Slot, Volume, Mass, itemID) VALUES"
-				+ "('A100', '10', 'CHEST', 50, 50, 'I100'),"
-				+ "('A200', '10', 'HAND', 50, 50, 'I200'),"
-				+ "('A300', '10', 'PANTS', 50, 50, 'I300'),"
-				+ "('A400', '10', 'CHEST', 50, 50, 'I400'),"
-				+ "('A500', '10', 'HAND', 50, 50, 'I500');";
+		String sql = "INSERT INTO ARMOR(ArmorID, Damage_Reduction, Slot, Volume, Mass, ItemID) VALUES"
+				+ "('Cool Hat', '10', 'HEAD', 50, 50, 'Cool Hat'),"
+				+ "('A200', '10', 'HEAD', 50, 50, 'Fancy Hat'),"
+				+ "('A300', '10', 'HEAD', 50, 50, 'Crazy Headband'),"
+				+ "('A400', '10', 'CHEST', 50, 50, 'Black Jacket'),"
+				+ "('A500', '10', 'CHEST', 50, 50, 'Suit');";
 		
 		state.execute(sql);
 
@@ -287,12 +322,12 @@ public class InsertStatements {
 	{
 		Statement state = m_dbConn.createStatement();
 		
-		String sql = "INSERT INTO GENERIC_ITEM(gID, Volume, Mass, itemID) VALUES"
-				+ "('G100', 5, 5, 'I100'),"
-				+ "('G200', 5, 5, 'I200'),"
-				+ "('G300', 5, 5, 'I300'),"
-				+ "('G400', 5, 5, 'I400'),"
-				+ "('G500', 5, 5, 'I500');";
+		String sql = "INSERT INTO GENERIC_ITEM(genItemID, Volume, Mass, ItemID) VALUES"
+				+ "('Metal Ball', 5, 5, 'Metal Ball'),"
+				+ "('Round Ball', 5, 5, 'Round Ball'),"
+				+ "('Square Ball', 5, 5, 'Square Ball'),"
+				+ "('Book', 5, 5, 'Book'),"
+				+ "('Sharp Object', 5, 5, 'Sharp Object');";
 		
 		state.execute(sql);
 
@@ -306,12 +341,12 @@ public class InsertStatements {
 	{
 		Statement state = m_dbConn.createStatement();
 		
-		String sql = "INSERT INTO CONTAINER(cID, Volume, Mass, Volume_Limit, Weight_Limit, itemID) VALUES"
-				+ "('C100', 100, 100, 100, 100, 'I100'),"
-				+ "('C200', 100, 100, 100, 100, 'I200'),"
-				+ "('C300', 100, 100, 100, 100, 'I300'),"
-				+ "('C400', 100, 100, 100, 100, 'I400'),"
-				+ "('C500', 100, 100, 100, 100, 'I500');";
+		String sql = "INSERT INTO CONTAINER(ConID, Volume, Mass, Mass_Limit, Volume_Limit, ItemID) VALUES"
+				+ "('C100', 100, 100, 100, 100, 'Bag'),"
+				+ "('C200', 100, 100, 100, 100, 'Backpack'),"
+				+ "('C300', 100, 100, 100, 100, 'Pockets'),"
+				+ "('C400', 100, 100, 100, 100, 'Secret bag'),"
+				+ "('C500', 100, 100, 100, 100, 'Cool bag');";
 		
 		state.execute(sql);
 
@@ -326,11 +361,11 @@ public class InsertStatements {
 		Statement state = m_dbConn.createStatement();
 		
 		String sql = "INSERT INTO ABILITY (abID,effect,Stat_Affected, Cast_Time, Rate_of_ocurrence, CreID) VALUES"
-				+ "('AB100', 20, 'HEALTH', 00:00:01, 00:40:00, 999 ),"
-				+ "('AB200', 20, 'STRENGTH', 00:00:01, 00:20:00, 998 ),"
-				+ "('AB300', 20, 'HEALTH', 00:00:07, 00:40:00, 997 ),"
-				+ "('AB400', 20, 'STAMINA', 00:01:00, 00:30:00, 996 ),"
-				+ "('AB500', 20, 'HEALTH', 00:00:3, 00:10:00, 995 );";
+				+ "('AB100', 20, 'HEALTH', 000001, 004000, 999 ),"
+				+ "('AB200', 20, 'STRENGTH', 000001, 002000, 998 ),"
+				+ "('AB300', 20, 'HEALTH', 000007, 004000, 997 ),"
+				+ "('AB400', 20, 'STAMINA', 000100, 003000, 996 ),"
+				+ "('AB500', 20, 'HEALTH', 000003, 001000, 995 );";
 		
 		state.execute(sql);
 
@@ -340,12 +375,12 @@ public class InsertStatements {
 	{
 		Statement state = m_dbConn.createStatement();
 		
-		String sql = "INSERT INTO WEAPON(wID, Volume, Mass, Current_Location, abID, itemID) VALUES"
-				+ "('W100', 10, 12, 'Left Hand', 'AB100, 'I100'),"
-				+ "('W200', 10, 12, 'Right Hand', 'AB200, 'I200'),"
-				+ "('W300', 10, 12, 'Left Hand', 'AB300, 'I300'),"
-				+ "('W400', 10, 12, 'Right Hand', 'AB400, 'I400'),"
-				+ "('W500', 10, 12, 'Left Hand', 'AB500, 'I500');";
+		String sql = "INSERT INTO WEAPON(WeapID, Volume, Mass, Current_Location, abID, ItemID) VALUES"
+				+ "('W100', 10, 12, 'Left', 'AB100', 'Sword of Luck'),"
+				+ "('W200', 10, 12, 'Right', 'AB200', 'Clacky Balls'),"
+				+ "('W300', 10, 12, 'Left', 'AB300', 'Hermit Purple'),"
+				+ "('W400', 10, 12, 'Right', 'AB400', 'Sharp Claws'),"
+				+ "('W500', 10, 12, 'Left', 'AB500', 'The World');";
 		
 		state.execute(sql);
 
