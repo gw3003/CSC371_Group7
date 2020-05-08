@@ -1,5 +1,10 @@
 import javax.swing.*;
+
+import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.DatabaseMetaData;
+
 import java.awt.*;
+import java.sql.SQLException;
 
 public class Display3 extends JFrame
 {
@@ -14,7 +19,15 @@ public class Display3 extends JFrame
    private JButton[] roomNumbers;
    private int amt_of_rooms = 9;
    
-   public static void main(String[] args)
+   	//SQL Connection stuff
+ 	public static final String DB_LOCATION = "jdbc:mysql://db.cs.ship.edu:3306/csc371_23";
+ 	public static final String LOGIN_NAME = "csc371_23";
+ 	public static final String PASSWORD = "Password23";
+ 	// Make sure and use the java.sql imports.
+ 	protected static Connection m_dbConn = null;
+ 	protected static DatabaseMetaData meta = null;
+   
+   public static void main(String[] args) throws SQLException
    {
       Display3 run = new Display3();
    }
